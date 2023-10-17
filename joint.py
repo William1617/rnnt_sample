@@ -39,7 +39,7 @@ class TransducerJoint(torch.nn.Module):
 
         self.ffn_out = nn.Linear(join_dim, voca_size)
 
-    def forward(self, enc_out: torch.Tensor, pred_out: torch.Tensor):
+    def forward(self, enc_out: torch.Tensor, pred_out: torch.Tensor,fast_rnnt: bool=False):
         """
         Args:
             enc_out (torch.Tensor): [B, T, E]
@@ -51,9 +51,9 @@ class TransducerJoint(torch.nn.Module):
                 and self.pred_ffn is not None):
             enc_out = self.enc_ffn(enc_out)  # [B,T,E] -> [B,T,V]
             pred_out = self.pred_ffn(pred_out)
-
-        enc_out = enc_out.unsqueeze(2)  # [B,T,V] -> [B,T,1,V]
-        pred_out = pred_out.unsqueeze(1)  # [B,U,V] -> [B,1 U, V]
+        if(not fast_rnnt):
+            enc_out = enc_out.unsqueeze(2)  # [B,T,V] -> [B,T,1,V]
+            pred_out = pred_out.unsqueeze(1)  # [B,U,V] -> [B,1 U, V]
 
         # TODO(Mddct): concat joint
         _ = self.joint_mode
